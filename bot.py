@@ -1,6 +1,7 @@
 import sys
 import requests
 import time
+import getpass
 from lxml import etree
 from lxml import html
 from load_config import ConfigLoader
@@ -14,6 +15,9 @@ class Bot():
         self.config_loader = ConfigLoader()
         self.configTable = self.config_loader.getConfigTable()
         self.session = requests.Session()
+        self.matricula = ''
+        self.senha = ''
+
         print('Inicializado.')
 
     def startBot(self):
@@ -21,18 +25,23 @@ class Bot():
         nChecks = 1
         refreshRate = 0
         notas = {}
+        loggedIn = False
 
-        refreshRate = int(self.configTable[2])
+        refreshRate = int(self.configTable[0])
         print('Refresh rate: ' + str(refreshRate) + ' minutos.')
 
         print('Iniciando o bot...')
         print('Tentando efetuar login...')
         
-        if (not self.login()):
-            print("Erro ao efetuar Login!")
-            return False
-        else:
-            print("Login efetuado!")
+        while(not loggedIn):
+            print('-----------------')
+            self.matricula = input('Entre sua matricula: ')
+            self.senha = getpass.getpass('Entre sua senha: ')
+            if (not self.login()):
+                print("Erro ao efetuar Login!")
+            else:
+                print("Login efetuado!")
+                loggedIn = True
 
         #Pega as notas iniciais.
         notas = self.getNotas()
@@ -53,9 +62,9 @@ class Bot():
         r = self.session.get('http://siga.udesc.br/siga/inicial.do')
         URL = 'http://siga.udesc.br/siga/j_security_check'
         login_data = {
-            'j_username': self.configTable[0],
-            'senha': self.configTable[1],
-            'j_password': self.configTable[1],
+            'j_username': self.matricula,
+            'senha': self.senha,
+            'j_password': self.senha,
             'btnLogin' : '',
         }
         r = self.session.post(URL, data = login_data)

@@ -20,6 +20,8 @@ class ConfigLoader():
 		configTable = []
 		errors = []
 		
+		'''
+		Removido a senha do arquivo de configuracao.
 		try:
 			_matricula = self.config.get('USER', 'matricula')
 			if(len(_matricula) != 9):
@@ -37,6 +39,7 @@ class ConfigLoader():
 				configTable.append(_senha)
 		except:
 			errors.append('A senha nao esta corretamente configurada')
+		'''
 
 		try:
 			_refreshRate = self.config.getint('WATCH', 'intervalo')
