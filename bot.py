@@ -59,22 +59,27 @@ class Bot():
         return True
 
     def login(self):
+        #Iniciar os cookies e etc
         r = self.session.get('http://siga.udesc.br/siga/inicial.do')
+        #URL que efetua efetivamente o login
         URL = 'http://siga.udesc.br/siga/j_security_check'
+        #Data para enviar no post
         login_data = {
             'j_username': self.matricula,
             'senha': self.senha,
             'j_password': self.senha,
             'btnLogin' : '',
         }
+        #Executa login
         r = self.session.post(URL, data = login_data)
-
+        # Checa se login foi efetuado chechando o response header
         if (self.checkLogin(r.headers.keys())):
             return True
         else:
             return False        
 
     def checkLogin(self, keys):
+        #Se ha uma key 'set-cookie' o login foi realmente efetuado.
         if ('set-cookie' in keys):
             return True
 
@@ -85,18 +90,23 @@ class Bot():
         r = self.session.get('http://siga.udesc.br/siga/plc/desconectaPlc.do?evento=Desconectar')
 
     def getNotas(self):
+        #Entra na pagina que contem as medias semestrais
         r = self.session.get('http://siga.udesc.br/siga/com/executaconsultapersonaliz.do?evento=executaConsulta&id=2&exe=S')
-
         tree = html.fromstring(r.text)
 
         materias = {}
+        #Itera na tabela de notas, pegando todas as materias e suas respectivas medias
         for elem_a in tree.xpath('//*[@id="resultado"]/center/table/tr'):
+            #Verificador de seguranca, para nao pegar valores que nao nos interessam.
             if (len(elem_a) > 1 and elem_a[0].text is not None):
+                #Se nao ha nenhuma nota disponivel, atribua o valor -1 para aquela materia
                 if (elem_a[2].text is None):
                     materias[elem_a[0].text] = -1.0
+                #Caso tenha alguma nota, troque a virgula por um ponto e realize a conversao para float.
                 else:
                     materias[elem_a[0].text] = float(elem_a[2].text.replace(',', '.'))
 
+        #Impressao da table de media/materia
         print("")
         for a in materias:
             print(a + " - " + str(materias[a]))
@@ -107,6 +117,7 @@ class Bot():
     def verificaAlteracoes(self, materias_old, materias_new):
         houveAlteracao = False
         for key in materias_old:
+            #Simples checage se houve alteracao
             if(materias_old[key] != materias_new[key]):
                 print("A MEDIA DE " + key + " FOI ALTERADA!")
                 print("A NOVA MEDIA EH: " + str(materias_new[key]))
