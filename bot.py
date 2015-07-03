@@ -109,7 +109,7 @@ class Bot():
         #Impressao da table de media/materia
         print("")
         for a in materias:
-            print(a + " - " + str(materias[a]))
+            print(str(a.encode('ascii', 'ignore')) + " - " + str(materias[a]))
         print("")
         
         return materias
