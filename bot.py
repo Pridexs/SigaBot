@@ -35,8 +35,8 @@ class Bot():
         
         while(not loggedIn):
             print('-----------------')
-            self.matricula = input('Entre sua matricula: ')
-            self.senha = getpass.getpass('Entre sua senha: ')
+            self.matricula = input('Digite seu CPF: ')
+            self.senha = getpass.getpass('Digite sua senha: ')
             if (not self.login()):
                 print("Erro ao efetuar Login!")
             else:
